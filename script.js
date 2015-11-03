@@ -19,17 +19,8 @@ function run() {
     checkDirs();
     processImagesDir(imagesDir);
 
-    chokidar.watch(imagesDir, {depth: 0}).on("add", function (file) {
-        if (path.extname(file) === ".pnm") {
-            multicrop(file);
-        }
-    });
-
-    chokidar.watch(croppedDir, {depth: 0}).on("add", function (file) {
-        if (path.extname(file) === ".pnm") {
-            convertToJpg(file);
-        }
-    });
+    chokidar.watch(path.join(imagesDir, "*.pnm"), {depth: 0}).on("add", multicrop);
+    chokidar.watch(path.join(croppedDir, "*.pnm"), {depth: 0}).on("add", convertToJpg);
 
     process.on("exit", exitHandler.bind(null, {cleanUp: true}));
     process.on("SIGINT", exitHandler.bind(null, {exit: true}));
